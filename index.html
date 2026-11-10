@@ -1,0 +1,1301 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="Lern-App Chemie EF: Benennung der Alkanole mit Baukasten">
+<title>Alkanol-Baukasten</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Layout: Lerneinheit Schritt für Schritt. Oben Titel und Schrittleiste, darunter links der Auftrag, rechts die
+   Werkbank mit Baukasten und Formeln, unten eine feste Leiste mit Ergebnisblatt-Haken und Weiter.
+   Formelfarben wie im Buch: Hauptkette blau, OH-Gruppe rot, Methylgruppen orange, Ethylgruppen violett. */
+:root{
+  --bg:#EDF1EE; --surface:#FFFFFF; --surface-2:#F3F6F4; --ink:#16231D; --muted:#55645C; --line:#C9D4CE;
+  --accent:#4B7A26; --accent-ink:#FFFFFF; --teal:#1D8C85; --teal-tint:#DDF0EE;
+  --chain:#2B5EA8; --chain-tint:#E1EAF7; --oh:#C33E28; --methyl:#A65700; --ethyl:#7443AE;
+  --ok:#2B7A44; --ok-tint:#E0F1E5; --bad:#B3412A; --bad-tint:#F8E3DD; --hint:#7D5B00; --hint-tint:#FFF3D1;
+  --slot:#879990; --glow:#FFD966; --scrim:rgba(16,24,20,.5); --label-band:#1D8C85; --label-ink:#FFFFFF;
+  --f-display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,sans-serif;
+  --f-formel:"Atkinson Hyperlegible",Arial,"Helvetica Neue",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1416; --surface:#162024; --surface-2:#1C282C; --ink:#E3ECE7; --muted:#9BAEA5; --line:#2C3B38;
+    --accent:#8CC15A; --accent-ink:#0E1416; --teal:#4CC2B8; --teal-tint:#123634;
+    --chain:#86AEF2; --chain-tint:#1A2A44; --oh:#F27D65; --methyl:#F0A64F; --ethyl:#BC9AF2;
+    --ok:#6FC78C; --ok-tint:#15301F; --bad:#F08C73; --bad-tint:#3A1D17; --hint:#F2C94C; --hint-tint:#30270E;
+    --slot:#6D807A; --glow:#6B5A1C; --scrim:rgba(0,0,0,.62); --label-band:#1F6F6A; --label-ink:#F1F7F5;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1416; --surface:#162024; --surface-2:#1C282C; --ink:#E3ECE7; --muted:#9BAEA5; --line:#2C3B38;
+  --accent:#8CC15A; --accent-ink:#0E1416; --teal:#4CC2B8; --teal-tint:#123634;
+  --chain:#86AEF2; --chain-tint:#1A2A44; --oh:#F27D65; --methyl:#F0A64F; --ethyl:#BC9AF2;
+  --ok:#6FC78C; --ok-tint:#15301F; --bad:#F08C73; --bad-tint:#3A1D17; --hint:#F2C94C; --hint-tint:#30270E;
+  --slot:#6D807A; --glow:#6B5A1C; --scrim:rgba(0,0,0,.62); --label-band:#1F6F6A; --label-ink:#F1F7F5;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16.5px;line-height:1.45;-webkit-text-size-adjust:100%;overscroll-behavior-y:none}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+body.noscroll{overflow:hidden}
+button,input{font:inherit;color:inherit}
+button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+h1,h2,h3{text-wrap:balance;margin:0}
+p{margin:0}
+sub{font-size:.7em;line-height:0}
+:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* Kopf */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.top-in{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:10px 20px;flex-wrap:wrap;padding-block:10px}
+.brand{min-width:0;flex:1 1 230px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.brand .t{font-family:var(--f-display);font-weight:800;font-size:20px;line-height:1.15}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{min-height:38px;min-width:44px;padding:4px 11px;border-radius:99px;border:1px solid var(--line);background:var(--surface-2);font-size:13.5px;font-weight:700;color:var(--muted);cursor:pointer}
+.chip.done{background:var(--ok-tint);color:var(--ok);border-color:transparent}
+.chip[aria-current="step"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.chip:disabled{opacity:.45;cursor:default}
+
+/* Bühne */
+main{max-width:1280px;margin:0 auto;padding-block:16px 128px}
+.stage{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:18px;align-items:start}
+@media (max-width:900px){.stage{grid-template-columns:minmax(0,1fr)}}
+.panel,.bench{background:var(--surface);border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;min-width:0}
+.panel{padding:16px 18px;gap:12px}
+.bench{padding:14px;gap:12px}
+.stephead{display:flex;flex-direction:column;gap:2px}
+.stephead h2{font-family:var(--f-display);font-weight:800;font-size:27px;line-height:1.15}
+.meta{font-size:13.5px;color:var(--muted)}
+.info{background:var(--teal-tint);border-left:5px solid var(--teal);border-radius:8px;padding:10px 12px;font-size:15.5px}
+.info b{color:var(--ink)}
+ol.auftrag{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:9px;counter-reset:a}
+ol.auftrag li{counter-increment:a;display:grid;grid-template-columns:28px minmax(0,1fr);gap:8px;align-items:start}
+ol.auftrag li::before{content:counter(a);width:26px;height:26px;border-radius:50%;background:var(--hint-tint);color:var(--hint);font-weight:800;display:grid;place-items:center;font-size:14px}
+.feld{display:inline-block;font-weight:700;color:var(--teal);white-space:nowrap}
+.tips{display:flex;gap:8px;flex-wrap:wrap}
+.tipbox{background:var(--hint-tint);border-left:5px solid var(--hint);border-radius:8px;padding:10px 12px;font-size:15.5px}
+.tipbox b{color:var(--hint)}
+.sep{height:1px;background:var(--line);margin:2px 0}
+.hd{font-family:var(--f-display);font-weight:700;font-size:17px}
+.small{font-size:14px;color:var(--muted)}
+
+/* Knöpfe */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:8px 16px;border-radius:10px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-weight:700;font-size:15.5px;text-align:center}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.small{min-height:40px;padding:6px 12px;font-size:14.5px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn[aria-pressed="true"],.btn[aria-expanded="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* Leiste unten */
+.bottom{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.bottom-in{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:10px 14px;padding-block:10px;flex-wrap:wrap}
+.trans{flex:1 1 240px;display:flex;align-items:center;gap:10px;min-height:44px;font-weight:700;font-size:15.5px;cursor:pointer;min-width:0}
+.trans input{flex:none;width:26px;height:26px;margin:0;accent-color:var(--accent)}
+.trans .why{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+
+/* Formeln */
+.fbox{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.fbox svg.builder{margin:0 auto}
+svg.formel{display:block;max-width:100%;height:auto;overflow:visible}
+svg.formel.builder{max-width:none}
+.formel .at{font-family:var(--f-formel);font-size:24px;fill:var(--ink)}
+.formel .sub{font-size:16px}
+.formel .k-chain{fill:var(--chain)}
+.formel .k-methyl{fill:var(--methyl)}
+.formel .k-ethyl{fill:var(--ethyl)}
+.formel .k-oh{fill:var(--oh)}
+.formel line{stroke:var(--ink);stroke-width:2;stroke-linecap:round}
+.formel .loc{font-family:var(--f-body);font-size:15px;font-weight:700;fill:var(--chain)}
+.formel .rlab{font-family:var(--f-formel);font-size:24px;fill:var(--ink)}
+.formel .slot circle{fill:var(--surface);stroke:var(--slot);stroke-width:2;stroke-dasharray:5 4}
+.formel .slot text{fill:var(--slot);font-family:var(--f-body);font-size:24px;font-weight:700}
+.formel .hit{fill:transparent;cursor:pointer}
+.formel .glow{fill:var(--glow)}
+.formel .ring{fill:none;stroke:var(--oh);stroke-width:2.5;stroke-dasharray:6 4}
+.name{font-family:var(--f-formel);font-size:26px;font-weight:700;line-height:1.25;overflow-wrap:anywhere}
+.name.sm{font-size:19px}
+.n-chain{color:var(--chain)}
+.n-oh{color:var(--oh)}
+.n-methyl{color:var(--methyl)}
+.n-ethyl{color:var(--ethyl)}
+.mf{font-family:var(--f-formel);font-size:17px;color:var(--muted)}
+.legend{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+/* Werkbank-Bausteine */
+.toolbar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between}
+.tools{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tool{min-height:44px;min-width:58px;padding:6px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-family:var(--f-formel);font-weight:700;font-size:17px;cursor:pointer}
+.tool.oh{color:var(--oh)}
+.tool[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.stepper{display:flex;align-items:center;gap:6px}
+.stepper .val{min-width:96px;text-align:center;font-weight:700;font-size:15px}
+.stepper .btn{min-width:48px;font-size:20px;padding:4px 10px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:11px;overflow:hidden}
+.seg button{min-height:44px;padding:6px 16px;border:0;background:var(--surface);font-weight:700;cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.compose{display:flex;flex-direction:column;gap:8px}
+.display{min-height:58px;border:2px solid var(--line);border-radius:10px;padding:10px 14px;font-family:var(--f-formel);font-size:25px;font-weight:700;background:var(--surface-2);overflow-wrap:anywhere;display:flex;align-items:center}
+.display.empty{color:var(--muted);font-weight:400;font-size:16.5px;font-family:var(--f-body)}
+.tilerow{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tile{min-width:46px;min-height:46px;padding:6px 11px;border-radius:9px;border:1px solid var(--line);background:var(--surface);font-weight:700;font-size:16.5px;cursor:pointer;-webkit-user-select:none;user-select:none}
+.tile.sym{font-size:22px;line-height:1;min-width:50px}
+.tile.k-chain{color:var(--chain)}
+.tile.k-oh{color:var(--oh)}
+.tile.k-sub{color:var(--ink)}
+.tile.ctrl{background:var(--surface-2);font-size:14.5px}
+.tile:disabled{opacity:.4}
+.fb{border-radius:9px;padding:10px 12px;font-size:15.5px}
+.fb.ok{background:var(--ok-tint);border-left:5px solid var(--ok)}
+.fb.bad{background:var(--bad-tint);border-left:5px solid var(--bad)}
+.fb.note{background:var(--surface-2);border-left:5px solid var(--muted)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{min-height:42px;padding:6px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);font-weight:700;cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+.tab[aria-selected="true"]{background:var(--surface);border-color:var(--ink);box-shadow:inset 0 -3px 0 var(--ink)}
+.tab .st{width:11px;height:11px;border-radius:50%;background:var(--line)}
+.tab .st.ok{background:var(--ok)}
+.tab .st.sol{background:var(--hint)}
+.target{display:flex;flex-direction:column;gap:2px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:620px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.ex{border:1px solid var(--line);border-radius:10px;padding:8px 10px 10px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.ex .nr{font-size:13px;font-weight:700;color:var(--muted)}
+.pair{display:grid;grid-template-columns:86px minmax(0,1fr);gap:8px 12px;align-items:center}
+.pair .lab{font-weight:700;color:var(--muted);font-size:14px}
+@media (max-width:520px){.pair{grid-template-columns:minmax(0,1fr)}}
+.tried{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.tried b{display:inline-grid;place-items:center;width:34px;height:30px;border-radius:7px;border:1px dashed var(--line);font-size:14px;color:var(--muted)}
+.tried b.on{border:1px solid var(--chain);background:var(--chain-tint);color:var(--chain)}
+.quiz{display:flex;flex-direction:column;gap:8px}
+.opts{display:flex;gap:8px;flex-wrap:wrap}
+.opt{min-height:44px;padding:6px 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-family:var(--f-formel);font-weight:700;font-size:17px}
+.opt.right{border-color:var(--ok);background:var(--ok-tint)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-tint)}
+.cls{display:flex;gap:6px;flex-wrap:wrap}
+.cls .opt{font-family:var(--f-body);font-size:15px}
+.rform{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.rform>div{border:1px solid var(--line);border-radius:10px;padding:6px 8px;text-align:center;min-width:0}
+.rform .hd{font-size:15px}
+.profi-pick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:620px){.profi-pick{grid-template-columns:minmax(0,1fr)}}
+.pcard{border:2px dashed var(--muted);border-radius:12px;padding:12px 14px;background:var(--surface);text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:4px;min-height:44px}
+.pcard[aria-pressed="true"]{border-style:solid;border-color:var(--accent)}
+.pcard .hd{font-size:18px}
+.found{display:flex;flex-direction:column;gap:4px}
+.found li{font-family:var(--f-formel);font-weight:700}
+
+/* Start */
+.hero{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:24px;align-items:start}
+@media (max-width:900px){.hero{grid-template-columns:minmax(0,1fr)}}
+.hero h1{font-family:var(--f-display);font-weight:800;font-size:clamp(28px,4.4vw,44px);line-height:1.08;letter-spacing:-.01em}
+.hero .subt{font-family:var(--f-display);font-weight:600;font-size:20px;color:var(--muted);margin-top:6px}
+.etikett{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;max-width:360px;justify-self:center;width:100%;box-shadow:0 10px 24px rgba(0,0,0,.08)}
+.etikett .band{background:var(--label-band);color:var(--label-ink);padding:12px 16px;font-family:var(--f-display);font-weight:800;font-size:19px}
+.etikett .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px}
+.etikett .w{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.etikett .stoff{font-family:var(--f-formel);font-weight:700;font-size:24px;color:var(--oh)}
+.etikett .klein{font-size:13px;color:var(--muted)}
+.ablauf{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:620px){.ablauf{grid-template-columns:minmax(0,1fr)}}
+.ablauf table{width:100%;border-collapse:collapse;font-size:15px}
+.ablauf td{padding:5px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+.ablauf td:last-child{text-align:right;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.ablauf .hd{margin-bottom:4px}
+.startcol{display:flex;flex-direction:column;gap:14px}
+ul.plain{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+
+/* Dialog */
+.modal{position:fixed;inset:0;z-index:20;background:var(--scrim);display:grid;place-items:center;padding:16px}
+.modal-box{background:var(--surface);border-radius:14px;padding:18px;max-width:460px;width:100%;display:flex;flex-direction:column;gap:12px;border:1px solid var(--line)}
+.modal-box h3{font-family:var(--f-display);font-weight:800;font-size:21px}
+@media (prefers-reduced-motion:no-preference){.fade{animation:fade .25s ease-out}@keyframes fade{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in wrap" id="top"></div></header>
+<main class="wrap" id="main"></main>
+<footer class="bottom" id="bottom" hidden><div class="bottom-in wrap" id="bottomIn"></div></footer>
+<div class="modal" id="modal" hidden><div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalT" id="modalBox"></div></div>
+<script>/* Benennungslogik für den Alkanol-Baukasten (EF 01-09).
+   Ein Molekül wird als Bauplan beschrieben: {n: Länge der gezeichneten Kette, s: {"2u": "CH3", "1d": "OH", ...}}.
+   Plätze: Index des C-Atoms (0 = links) plus u (oben), d (unten) oder e (waagerecht am rechten Ende, nur für OH).
+   Gruppen: OH, CH3, C2H5, CH2OH (CH2OH nur für gezeichnete Aufgaben, nicht im Baukasten).
+   Regeln wie Fokus Chemie EF S. 47: Hauptkette = längste Kette mit dem C-Atom der OH-Gruppe, OH-Gruppe mit
+   kleinstmöglicher Nummer, dann Seitenketten mit kleinstmöglichen Nummern, alphabetisch, Zahlwörter di, tri, tetra. */
+var CHEM = (function () {
+  var STAMM = ['', 'meth', 'eth', 'prop', 'but', 'pent', 'hex', 'hept', 'oct', 'non', 'dec', 'undec', 'dodec'];
+  var MULT = ['', '', 'di', 'tri', 'tetra', 'penta', 'hexa'];
+  var MULT2 = ['', '', 'bis', 'tris', 'tetrakis'];
+  var STEMS = {};
+  for (var q = 1; q < STAMM.length; q++) STEMS[STAMM[q] + 'an'] = q;
+
+  function num(a, b) { return a - b; }
+  function cmpStr(a, b) { return a < b ? -1 : a > b ? 1 : 0; }
+  function lex(a, b) {
+    var n = Math.min(a.length, b.length);
+    for (var i = 0; i < n; i++) if (a[i] !== b[i]) return a[i] < b[i] ? -1 : 1;
+    return a.length - b.length;
+  }
+  function same(a, b) { return lex(a, b) === 0; }
+  function cap(s) { return s.replace(/[a-zäöü]/, function (c) { return c.toUpperCase(); }); }
+
+  /* Bauplan in einen Graphen übersetzen. Atome 0 bis n-1 sind die gezeichnete Kette. */
+  function graph(spec) {
+    var atoms = [], slots = {};
+    function add(oh) { atoms.push({ nb: [], oh: oh ? 1 : 0 }); return atoms.length - 1; }
+    function bond(a, b) { atoms[a].nb.push(b); atoms[b].nb.push(a); }
+    for (var i = 0; i < spec.n; i++) { add(false); if (i > 0) bond(i - 1, i); }
+    var keys = Object.keys(spec.s || {}).sort();
+    keys.forEach(function (k) {
+      var i = parseInt(k, 10), t = spec.s[k];
+      if (!(i >= 0 && i < spec.n)) return;
+      if (t === 'OH') { atoms[i].oh += 1; slots[k] = { type: t, at: i, atoms: [] }; }
+      else if (t === 'CH3') { var a = add(false); bond(i, a); slots[k] = { type: t, at: i, atoms: [a] }; }
+      else if (t === 'C2H5') { var a1 = add(false), a2 = add(false); bond(i, a1); bond(a1, a2); slots[k] = { type: t, at: i, atoms: [a1, a2] }; }
+      else if (t === 'CH2OH') { var c = add(true); bond(i, c); slots[k] = { type: t, at: i, atoms: [c] }; }
+    });
+    return { atoms: atoms, n: spec.n, slots: slots };
+  }
+
+  function treePath(atoms, u, v) {
+    var prev = {}; prev[u] = -1; var qu = [u];
+    while (qu.length) {
+      var x = qu.shift(); if (x === v) break;
+      atoms[x].nb.forEach(function (y) { if (!(y in prev)) { prev[y] = x; qu.push(y); } });
+    }
+    var p = []; for (var z = v; z !== -1; z = prev[z]) p.push(z);
+    return p.reverse();
+  }
+
+  /* Seitenkette ab Atom r (hängt an Atom from) benennen. */
+  function branch(atoms, r, from) {
+    var par = {}; par[r] = from; var order = [r];
+    for (var k = 0; k < order.length; k++) {
+      var x = order[k];
+      atoms[x].nb.forEach(function (y) { if (y !== par[x]) { par[y] = x; order.push(y); } });
+    }
+    var leaves = order.filter(function (x) { return atoms[x].nb.filter(function (y) { return y !== par[x]; }).length === 0; });
+    var best = null;
+    leaves.forEach(function (lf) {
+      var p = []; for (var z = lf; z !== from; z = par[z]) p.push(z);
+      p.reverse();
+      var ev = evalChain(atoms, p, from, -1);
+      if (!best || better(ev, best, true)) best = ev;
+    });
+    var oh = order.some(function (a) { return atoms[a].oh > 0; });
+    var simple = best.nSubs === 0;
+    var name = (simple ? '' : prefix(best.br).map(function (g) { return g.text; }).join('-')) + STAMM[best.len] + 'yl';
+    return { name: name, simple: simple, key: name.replace(/[^a-zäöü]/g, ''), atoms: order, oh: oh };
+  }
+
+  /* Eine Kette (Reihenfolge = Nummerierung) bewerten. from: Atom außerhalb, das nicht als Seitenkette zählt. */
+  function evalChain(atoms, chain, from, nDrawn) {
+    var inC = {}; chain.forEach(function (a) { inC[a] = true; });
+    var ohLoc = [], br = [];
+    chain.forEach(function (a, i) {
+      for (var k = 0; k < atoms[a].oh; k++) ohLoc.push(i + 1);
+      atoms[a].nb.forEach(function (y) {
+        if (inC[y] || y === from) return;
+        var b = branch(atoms, y, a); b.loc = i + 1; br.push(b);
+      });
+    });
+    var subLoc = br.map(function (b) { return b.loc; }).sort(num);
+    var alpha = br.slice().sort(function (x, y) { return cmpStr(x.key, y.key) || x.loc - y.loc; }).map(function (b) { return b.loc; });
+    var drawn = 0; if (nDrawn > 0) chain.forEach(function (a) { if (a < nDrawn) drawn++; });
+    return { chain: chain, len: chain.length, ohCount: ohLoc.length, ohLoc: ohLoc, nSubs: br.length, subLoc: subLoc, alpha: alpha, br: br, drawn: drawn };
+  }
+
+  function better(a, b, isBranch) {
+    if (!isBranch && a.ohCount !== b.ohCount) return a.ohCount > b.ohCount;
+    if (a.len !== b.len) return a.len > b.len;
+    var c;
+    if (!isBranch) { c = lex(a.ohLoc, b.ohLoc); if (c) return c < 0; }
+    if (a.nSubs !== b.nSubs) return a.nSubs > b.nSubs;
+    c = lex(a.subLoc, b.subLoc); if (c) return c < 0;
+    c = lex(a.alpha, b.alpha); if (c) return c < 0;
+    if (a.drawn !== b.drawn) return a.drawn > b.drawn;
+    return lex(a.chain, b.chain) < 0;
+  }
+
+  /* Präfixe gruppieren, alphabetisch ordnen, mit Zahlwort versehen. */
+  function prefix(br) {
+    var g = {}, list = [];
+    br.forEach(function (b) {
+      if (!g[b.name]) { g[b.name] = { name: b.name, simple: b.simple, key: b.key, locs: [], atoms: [] }; list.push(g[b.name]); }
+      g[b.name].locs.push(b.loc); g[b.name].atoms = g[b.name].atoms.concat(b.atoms);
+    });
+    list.sort(function (x, y) { return cmpStr(x.key, y.key); });
+    return list.map(function (x) {
+      x.locs.sort(num);
+      var m = x.locs.length > 1 ? (x.simple ? MULT[x.locs.length] : MULT2[x.locs.length]) : '';
+      return { text: x.locs.join(',') + '-' + m + (x.simple ? x.name : '(' + x.name + ')'), name: x.name, locs: x.locs, atoms: x.atoms };
+    });
+  }
+
+  function kindOf(name) { return name === 'methyl' ? 'methyl' : name === 'ethyl' ? 'ethyl' : 'other'; }
+
+  /* Hauptfunktion: Name und alles, was die Darstellung braucht. */
+  function analyse(spec) {
+    var g = graph(spec), atoms = g.atoms, N = atoms.length;
+    if (!N) return null;
+    var leaves = [];
+    for (var i = 0; i < N; i++) if (atoms[i].nb.length <= 1) leaves.push(i);
+    var cands = [];
+    if (N === 1) cands.push([0]);
+    for (var a = 0; a < leaves.length; a++) for (var b = a + 1; b < leaves.length; b++) {
+      var p = treePath(atoms, leaves[a], leaves[b]);
+      cands.push(p); cands.push(p.slice().reverse());
+    }
+    var best = null;
+    cands.forEach(function (c) { var ev = evalChain(atoms, c, -1, g.n); if (!best || better(ev, best, false)) best = ev; });
+    return finish(g, best);
+  }
+
+  function finish(g, ev) {
+    var atoms = g.atoms, len = ev.len;
+    var pre = prefix(ev.br), parts = [];
+    pre.forEach(function (p, i) {
+      if (i) parts.push({ t: '-', k: '' });
+      parts.push({ t: p.text, k: kindOf(p.name) });
+    });
+    var stem = STAMM[len] + 'an';
+    if (ev.ohCount === 0) parts.push({ t: stem, k: 'chain' });
+    else if (ev.ohCount === 1 && len <= 2) { parts.push({ t: stem, k: 'chain' }); parts.push({ t: 'ol', k: 'oh' }); }
+    else { parts.push({ t: stem, k: 'chain' }); parts.push({ t: '-' + ev.ohLoc.join(',') + '-' + MULT[ev.ohCount] + 'ol', k: 'oh' }); }
+    for (var i = 0; i < parts.length; i++) if (/[a-zäöü]/.test(parts[i].t)) { parts[i].t = cap(parts[i].t); break; }
+    var name = parts.map(function (p) { return p.t; }).join('');
+    var loc = {}, kind = {};
+    ev.chain.forEach(function (a, i) { loc[a] = i + 1; kind[a] = 'chain'; });
+    ev.br.forEach(function (b) { b.atoms.forEach(function (a) { kind[a] = kindOf(b.name); }); });
+    var subs = {}, revSubs = {};
+    pre.forEach(function (p) {
+      subs[p.name] = p.locs.slice();
+      revSubs[p.name] = p.locs.map(function (l) { return len + 1 - l; }).sort(num);
+    });
+    var cls = null, ohAtom = -1, ohNb = [];
+    if (ev.ohCount === 1) {
+      ohAtom = ev.chain[ev.ohLoc[0] - 1];
+      ohNb = atoms[ohAtom].nb.slice();
+      cls = ohNb.length === 0 ? 'keine' : ohNb.length === 1 ? 'primär' : ohNb.length === 2 ? 'sekundär' : 'tertiär';
+    }
+    return {
+      name: name, parts: parts, len: len, ohCount: ev.ohCount, ohLoc: ev.ohLoc.slice(),
+      revOhLoc: ev.ohLoc.map(function (l) { return len + 1 - l; }).sort(num),
+      subs: subs, revSubs: revSubs, nSubs: ev.nSubs, chain: ev.chain, loc: loc, kind: kind,
+      cls: cls, ohAtom: ohAtom, ohNb: ohNb, nC: atoms.length, graph: g,
+      branchOH: ev.br.some(function (b) { return b.oh; })
+    };
+  }
+
+  /* Molekülformel als Teile: [["C",3],["H",7],["OH",0]] */
+  function formel(r) {
+    if (!r) return '';
+    var c = r.nC, h = 2 * c + 2 - r.ohCount;
+    if (r.ohCount === 0) return 'C' + sub(c) + 'H' + sub(h);
+    if (r.ohCount === 1) return 'C' + sub(c) + 'H' + sub(h) + 'OH';
+    return 'C' + sub(c) + 'H' + sub(h) + '(OH)' + sub(r.ohCount);
+  }
+  function sub(n) { return n === 1 ? '' : '<sub>' + n + '</sub>'; }
+
+  /* Bausteine der Schüler*innen auswerten. */
+  var MULTS = { di: 2, tri: 3, tetra: 4 };
+  var ALKYL = { methyl: 1, ethyl: 1 };
+  function parse(tk) {
+    var i = 0, groups = [];
+    function peek() { return tk[i]; }
+    function dig(t) { return typeof t === 'string' && /^[0-9]$/.test(t); }
+    function locs() {
+      if (!dig(peek())) return null;
+      var l = [+tk[i++]];
+      while (peek() === ',' && dig(tk[i + 1])) { i++; l.push(+tk[i++]); }
+      return l;
+    }
+    while (i < tk.length && dig(peek())) {
+      var l = locs();
+      if (peek() !== '-') return { err: 'form' };
+      i++;
+      var m = null; if (MULTS[peek()]) m = tk[i++];
+      if (!ALKYL[peek()]) return { err: STEMS[peek()] ? 'locstem' : 'form' };
+      var s = tk[i++];
+      groups.push({ locs: l, mult: m, name: s });
+      if (peek() === '-') { i++; if (!dig(peek())) return { err: 'form' }; }
+    }
+    if (ALKYL[peek()] || MULTS[peek()]) return { err: 'noloc' };
+    var stem = peek();
+    if (!STEMS[stem]) return { err: 'form' };
+    i++;
+    if (i === tk.length) return { groups: groups, stem: stem, hasOl: false, ohLocs: null, ohMult: null };
+    var oh = null, ohMult = null;
+    if (peek() === 'ol') { i++; oh = []; }
+    else if (MULTS[peek()] && tk[i + 1] === 'ol') { ohMult = tk[i]; i += 2; oh = []; }
+    else if (peek() === '-') {
+      i++;
+      var l2 = locs();
+      if (!l2 || peek() !== '-') return { err: 'form' };
+      i++;
+      if (MULTS[peek()]) ohMult = tk[i++];
+      if (peek() !== 'ol') return { err: 'form' };
+      i++; oh = l2;
+    } else return { err: 'form' };
+    if (i !== tk.length) return { err: 'form' };
+    return { groups: groups, stem: stem, hasOl: true, ohLocs: oh, ohMult: ohMult };
+  }
+
+  var MSG = {
+    leer: 'Setze zuerst einen Namen aus den Bausteinen zusammen.',
+    form: 'Prüfe die Schreibweise. Zwischen Zahl und Wort steht ein Bindestrich, mehrere Zahlen trennst du mit Komma. Die Nummer der OH-Gruppe steht zwischen zwei Bindestrichen vor -ol, zum Beispiel 2,4-Dimethylhexan-3-ol.',
+    noloc: 'Vor jeder Seitenkette steht die Nummer des C-Atoms, an dem sie hängt, zum Beispiel 3-Methyl.',
+    locstem: 'Prüfe die Schreibweise. Nur vor Seitenketten steht eine Nummer, der Name der Hauptkette folgt direkt danach.',
+    kurz: 'Deine Hauptkette ist zu kurz. Suche die längste Kette, die das C-Atom mit der OH-Gruppe enthält.',
+    lang: 'Deine Hauptkette ist zu lang. Sie muss das C-Atom enthalten, an dem die OH-Gruppe sitzt.',
+    ol: 'Der Name braucht die Endung -ol für die Hydroxygruppe.',
+    ohloc: 'Gib an, an welchem C-Atom die OH-Gruppe sitzt. Die Nummer steht zwischen zwei Bindestrichen vor der Endung -ol.',
+    dir: 'Du hast von der falschen Seite gezählt. Nummeriere so, dass die OH-Gruppe die kleinstmögliche Nummer bekommt.',
+    ohloc2: 'Die Nummer der OH-Gruppe stimmt noch nicht. Zähle die C-Atome der Hauptkette von dem Ende aus, das näher an der OH-Gruppe liegt.',
+    ohmult: 'Bei mehreren OH-Gruppen gibt ein Zahlwort vor -ol ihre Anzahl an, zum Beispiel -diol oder -triol. Bei einer OH-Gruppe steht kein Zahlwort.',
+    subs: 'Prüfe die Seitenketten: Art oder Anzahl stimmen noch nicht. Eine Methylgruppe hat ein C-Atom, eine Ethylgruppe zwei.',
+    mult: 'Gleiche Seitenketten fasst du zusammen. Ein Zahlwort (di, tri, tetra) gibt ihre Anzahl an, davor stehen alle Nummern, zum Beispiel 2,2-Dimethyl.',
+    subdir: 'Die OH-Gruppe bekommt von beiden Seiten dieselbe Nummer. Dann entscheiden die Seitenketten: Sie sollen die kleinstmöglichen Nummern bekommen.',
+    subloc: 'Die Nummern der Seitenketten stimmen noch nicht. Zähle mit derselben Nummerierung wie für die OH-Gruppe.',
+    alpha: 'Ordne die Seitenketten alphabetisch: Ethyl steht vor Methyl. Zahlwörter wie di zählen dabei nicht mit.',
+    rest: 'Fast richtig. Prüfe die Schreibweise noch einmal.'
+  };
+
+  function diagnose(tk, r) {
+    if (!tk || !tk.length) return { ok: false, code: 'leer', msg: MSG.leer };
+    var s = tk.join('');
+    if (s === r.name.toLowerCase()) return { ok: true };
+    if (r.ohCount === 1 && r.len <= 2 && s === STAMM[r.len] + 'an-1-ol') {
+      return { ok: true, note: 'Bei ' + r.name + ' lässt man die 1 weg, weil die OH-Gruppe nur an einer Stelle sitzen kann.' };
+    }
+    var p = parse(tk);
+    if (p.err) return { ok: false, code: p.err, msg: MSG[p.err] || MSG.form };
+    var lenS = STEMS[p.stem];
+    if (lenS !== r.len) return { ok: false, code: lenS < r.len ? 'kurz' : 'lang', msg: lenS < r.len ? MSG.kurz : MSG.lang };
+    if (!p.hasOl) return { ok: false, code: 'ol', msg: MSG.ol };
+    var needLoc = !(r.ohCount === 1 && r.len <= 2);
+    if (needLoc && (!p.ohLocs || !p.ohLocs.length)) return { ok: false, code: 'ohloc', msg: MSG.ohloc };
+    var sl = (p.ohLocs || []).slice().sort(num);
+    if (needLoc && !same(sl, r.ohLoc)) {
+      if (same(sl, r.revOhLoc)) return { ok: false, code: 'dir', msg: MSG.dir };
+      return { ok: false, code: 'ohloc2', msg: MSG.ohloc2 };
+    }
+    var needM = r.ohCount > 1 ? MULT[r.ohCount] : null;
+    if ((p.ohMult || null) !== needM) return { ok: false, code: 'ohmult', msg: MSG.ohmult };
+    var sus = {}, multErr = false, dup = false;
+    var anz = {};
+    p.groups.forEach(function (gr) {
+      if (sus[gr.name]) dup = true;
+      sus[gr.name] = (sus[gr.name] || []).concat(gr.locs);
+      anz[gr.name] = (anz[gr.name] || 0) + Math.max(gr.locs.length, MULTS[gr.mult] || 1);
+      var need = gr.locs.length > 1 ? MULT[gr.locs.length] : null;
+      if ((gr.mult || null) !== need) multErr = true;
+    });
+    var ks = Object.keys(r.subs), kSus = Object.keys(sus);
+    var kindsOk = ks.length === kSus.length && ks.every(function (k) { return sus[k] && (sus[k].length === r.subs[k].length || anz[k] === r.subs[k].length); });
+    if (!kindsOk) return { ok: false, code: 'subs', msg: MSG.subs };
+    if (dup || multErr) return { ok: false, code: 'mult', msg: MSG.mult };
+    var locOk = ks.every(function (k) { return same(sus[k].slice().sort(num), r.subs[k]); });
+    if (!locOk) {
+      var revOk = ks.every(function (k) { return same(sus[k].slice().sort(num), r.revSubs[k]); });
+      if (revOk && same(r.ohLoc, r.revOhLoc)) return { ok: false, code: 'subdir', msg: MSG.subdir };
+      return { ok: false, code: 'subloc', msg: MSG.subloc };
+    }
+    var order = p.groups.map(function (gr) { return gr.name; });
+    if (!same(order, order.slice().sort(cmpStr))) return { ok: false, code: 'alpha', msg: MSG.alpha };
+    return { ok: false, code: 'rest', msg: MSG.rest };
+  }
+
+  /* Gebautes Molekül mit dem gesuchten vergleichen. */
+  function vergleiche(rb, rt) {
+    if (!rb) return { ok: false, msg: 'Stelle zuerst ein Molekül dar.' };
+    if (rb.name === rt.name) return { ok: true };
+    if (rb.ohCount === 0) return { ok: false, msg: 'Dein Molekül hat noch keine OH-Gruppe. Wähle das Werkzeug OH und tippe auf einen freien Platz.' };
+    var m = 'Dein Molekül heißt ' + rb.name + '. ';
+    if (rb.len !== rt.len) m += 'Seine Hauptkette hat ' + rb.len + ' C-Atome, gesucht sind ' + rt.len + '.';
+    else if (rb.ohCount !== rt.ohCount) m += 'Prüfe die Anzahl der OH-Gruppen.';
+    else if (!same(rb.ohLoc, rt.ohLoc)) m += 'Prüfe, an welchem C-Atom der Hauptkette die OH-Gruppe sitzt.';
+    else m += 'Prüfe Art und Stellung der Seitenketten.';
+    return { ok: false, msg: m };
+  }
+
+  return {
+    analyse: analyse, diagnose: diagnose, vergleiche: vergleiche, parse: parse, formel: formel,
+    graph: graph, STAMM: STAMM, cap: cap, same: same
+  };
+})();</script>
+<script>
+(function () {
+'use strict';
+var KEY = 'alkanol-baukasten-v1';
+var FONT = '"Atkinson Hyperlegible", Arial, "Helvetica Neue", sans-serif';
+
+/* ---------- Moleküle der Aufgaben ---------- */
+var SP = {
+  P1: { n: 6, s: { '0u': 'OH', '2d': 'CH3' } },
+  P2: { n: 6, s: { '4d': 'OH', '1u': 'CH3' } },
+  P3: { n: 5, s: { '1d': 'OH', '2u': 'CH3', '2d': 'CH3' } },
+  P4: { n: 5, s: { '0u': 'OH', '1d': 'CH3', '2u': 'C2H5' } },
+  Q1: { n: 7, s: { '5u': 'OH' } },
+  B11: { n: 7, s: { '4u': 'OH' } },
+  B12: { n: 7, s: { '3d': 'OH', '5u': 'CH3' } },
+  B13: { n: 6, s: { '1u': 'CH3', '2d': 'OH', '3u': 'C2H5' } },
+  B14: { n: 6, s: { '2d': 'CH2OH' } },
+  B21: { n: 8, s: { '3u': 'OH' } },
+  B22: { n: 5, s: { '1u': 'OH', '3u': 'CH3', '3d': 'CH3' } },
+  B23: { n: 6, s: { '2u': 'C2H5', '2d': 'OH' } },
+  PB1: { n: 2, s: { '0u': 'OH', '1u': 'OH' } },
+  PB2: { n: 4, s: { '0u': 'OH', '2d': 'OH' } },
+  PB3: { n: 3, s: { '0u': 'OH', '1d': 'OH' } }
+};
+var B1 = [
+  { id: 'B1.1', niv: '○', sp: 'B11',
+    t1: 'Zähle die C-Atome der Kette. Die Nummerierung beginnt an dem Ende, das näher an der OH-Gruppe liegt.',
+    t2: 'Die Kette hat 7 C-Atome. Von rechts gezählt sitzt die OH-Gruppe am 3. C-Atom.' },
+  { id: 'B1.2', niv: '◒', sp: 'B12',
+    t1: 'Die OH-Gruppe bekommt von beiden Seiten dieselbe Nummer.',
+    t2: 'Dann entscheidet die Seitenkette. Zähle so, dass die Methylgruppe die kleinere Nummer bekommt.' },
+  { id: 'B1.3', niv: '◒', sp: 'B13',
+    t1: 'Bestimme zuerst die Hauptkette und ihre Nummerierung. Gib dann die Seitenketten mit ihren Nummern an.',
+    t2: 'Die Seitenketten stehen in alphabetischer Reihenfolge vor dem Namen der Hauptkette.' },
+  { id: 'B1.4', niv: '●', sp: 'B14',
+    t1: 'Die Hauptkette muss das C-Atom enthalten, an dem die OH-Gruppe sitzt.',
+    t2: 'Starte am C-Atom der CH<sub>2</sub>-OH-Gruppe und suche von dort aus die längste Kette. Die waagerechte Kette ist hier nicht die Hauptkette.' }
+];
+var B2 = [
+  { id: 'B2.1', niv: '○', sp: 'B21',
+    t1: 'Stelle die Kette auf 8 C-Atome ein.',
+    t2: 'Setze die OH-Gruppe an das 4. C-Atom.' },
+  { id: 'B2.2', niv: '◒', sp: 'B22',
+    t1: 'Die Hauptkette hat 5 C-Atome, die OH-Gruppe sitzt am 2. C-Atom.',
+    t2: '4,4-Dimethyl bedeutet zwei Methylgruppen am 4. C-Atom, eine oben und eine unten.' },
+  { id: 'B2.3', niv: '●', sp: 'B23',
+    t1: 'Die OH-Gruppe und die Ethylgruppe sitzen am selben C-Atom.',
+    t2: 'Kette mit 6 C-Atomen, am 3. C-Atom oben C<sub>2</sub>H<sub>5</sub> und unten OH.' }
+];
+var B3 = [
+  { sp: 'P1' }, { sp: 'P3' }, { sp: 'B23' }, { sp: 'B14' }
+];
+var PB = [
+  { id: 'PB1', art: 'name', sp: 'PB1',
+    t1: 'Zähle die C-Atome und die OH-Gruppen.',
+    t2: 'Zwei OH-Gruppen: Vor -ol steht das Zahlwort di, davor stehen beide Nummern.' },
+  { id: 'PB2', art: 'name', sp: 'PB2',
+    t1: 'Nummeriere so, dass die OH-Gruppen die kleinstmöglichen Nummern bekommen.',
+    t2: 'Vergleiche die Nummern von links gezählt mit den Nummern von rechts gezählt.' },
+  { id: 'PB3', art: 'bau', sp: 'PB3',
+    t1: 'Die Kette hat 3 C-Atome.',
+    t2: 'Je eine OH-Gruppe sitzt am 1. und am 2. C-Atom.' }
+];
+
+var STEPS = ['start', 'A1', 'A2', 'A3', 'H1', 'B1', 'B2', 'B3', 'H2', 'P', 'end'];
+var CHIP = { A1: 'A1', A2: 'A2', A3: 'A3', H1: 'Halt 1', B1: 'B1', B2: 'B2', B3: 'B3', H2: 'Halt 2', P: 'Profi' };
+var FELD = {
+  A1: 'Feld A1 ist ausgefüllt.', A2: 'Feld A2 ist ausgefüllt.', A3: 'Feld A3 ist ausgefüllt.',
+  H1: 'Wir haben unsere Regeln verglichen.', B1: 'Feld B1 ist ausgefüllt.', B2: 'Feld B2 ist ausgefüllt.',
+  B3: 'Feld B3 ist ausgefüllt.', H2: 'Wir haben unsere Regeln geprüft.'
+};
+
+/* ---------- Zustand ---------- */
+function fresh() {
+  return {
+    v: 1, step: 'start', max: 0, started: false, trans: {}, tips: {},
+    a1n: 3, a2c: 3, a2: { 3: null, 5: null }, a2tried: {}, q1: null, q2: null,
+    b1: { i: 0, t: {} }, b2: { i: 0, t: {} }, b3: {}, b3tips: 0,
+    profi: null, pa: { spec: { n: 6, s: {} }, tk: [], found: [], fb: null, tips: 0 },
+    pb: { i: 0, t: {} }, tool: 'OH', note: null
+  };
+}
+var S = fresh();
+try { var raw = localStorage.getItem(KEY); if (raw) S = Object.assign(fresh(), JSON.parse(raw)); } catch (e) {}
+var neu = location.hash === '#neu';
+if (neu) {
+  S = fresh();
+  try { localStorage.removeItem(KEY); history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+function task(group, id) {
+  var g = S[group].t;
+  if (!g[id]) g[id] = { tk: [], tries: 0, ok: false, sol: false, tips: 0, fb: null, spec: null };
+  return g[id];
+}
+
+/* ---------- Hilfen ---------- */
+function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+function f(x) { return Math.round(x * 10) / 10; }
+function clone(o) { return JSON.parse(JSON.stringify(o)); }
+function nameHTML(parts, colored) {
+  return parts.map(function (p) { return colored && p.k ? '<span class="n-' + p.k + '">' + esc(p.t) + '</span>' : esc(p.t); }).join('');
+}
+
+/* ---------- Formeln zeichnen (Halbstrukturformeln) ---------- */
+var M = { C: 16.6, H: 17.6, O: 18.7, d: 9.6 };
+var FS = 24, SFS = 16, DX = 80, DY = 64, CAP = 17, GAP = 5, SC = 0.85;
+function measure() {
+  try {
+    var ctx = document.createElement('canvas').getContext('2d');
+    ctx.font = FS + 'px ' + FONT;
+    M.C = ctx.measureText('C').width; M.H = ctx.measureText('H').width; M.O = ctx.measureText('O').width;
+    ctx.font = SFS + 'px ' + FONT; M.d = ctx.measureText('3').width;
+  } catch (e) {}
+}
+function cLab(x, y, k, h) { return { x: x, y: y, left: x - M.C / 2, w: M.C + (h > 0 ? M.H : 0) + (h > 1 ? M.d : 0), t: 'C', h: h, k: k }; }
+function oLab(x, y) { return { x: x, y: y, left: x - M.O / 2, w: M.O + M.H, t: 'OH', k: 'oh' }; }
+function bondLine(a, b) {
+  if (Math.abs(a.y - b.y) < 1) {
+    var l = a.x < b.x ? a : b, r = a.x < b.x ? b : a;
+    return [l.left + l.w + GAP, l.y, r.left - GAP, r.y];
+  }
+  var u = a.y < b.y ? a : b, d = a.y < b.y ? b : a;
+  return [u.x, u.y + CAP / 2 + GAP + 3, d.x, d.y - CAP / 2 - GAP];
+}
+function txt(l, extra) {
+  var s = '<text class="at' + (l.k ? ' k-' + l.k : '') + (extra || '') + '" x="' + f(l.left) + '" y="' + f(l.y + CAP / 2) + '">';
+  if (l.t === 'OH') s += 'OH';
+  else { s += 'C'; if (l.h > 0) s += 'H'; if (l.h > 1) s += '<tspan class="sub" dy="5">' + l.h + '</tspan>'; }
+  return s + '</text>';
+}
+/* o: color, numbers, slots ('u' oder 'ud'), hl (Atome), ring (Atom), fixW (Kettenlänge für feste Breite), label */
+function drawFormel(spec, o) {
+  o = o || {};
+  var r = CHEM.analyse(spec), g = r ? r.graph : CHEM.graph(spec), atoms = g.atoms, n = spec.n;
+  var pos = {}, L = {}, labs = [], bonds = [];
+  for (var i = 0; i < n; i++) pos[i] = { x: i * DX, y: 0 };
+  Object.keys(g.slots).forEach(function (k) {
+    var sl = g.slots[k], side = k.slice(-1), sg = side === 'u' ? -1 : 1;
+    if (side === 'e') return;
+    sl.atoms.forEach(function (a, j) { pos[a] = { x: sl.at * DX, y: sg * DY * (j + 1) }; });
+  });
+  atoms.forEach(function (at, id) {
+    var k = (o.color && r) ? (r.kind[id] || '') : '';
+    L[id] = cLab(pos[id].x, pos[id].y, k, 4 - at.nb.length - at.oh);
+    labs.push(L[id]);
+  });
+  atoms.forEach(function (at, id) { at.nb.forEach(function (j) { if (j > id) bonds.push([L[id], L[j]]); }); });
+  Object.keys(g.slots).forEach(function (k) {
+    var sl = g.slots[k], side = k.slice(-1), c = L[sl.at], ol;
+    if (sl.type === 'OH') {
+      if (side === 'e') ol = oLab(c.left + c.w + 44 + M.O / 2, 0);
+      else ol = oLab(c.x, (side === 'u' ? -1 : 1) * DY);
+      labs.push(ol); bonds.push([c, ol]);
+    } else if (sl.type === 'CH2OH') {
+      var cc = L[sl.atoms[0]];
+      ol = oLab(cc.x, (side === 'u' ? -2 : 2) * DY);
+      labs.push(ol); bonds.push([cc, ol]);
+    }
+  });
+  var x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  function ext(a, b, c, d) { x0 = Math.min(x0, a); y0 = Math.min(y0, b); x1 = Math.max(x1, c); y1 = Math.max(y1, d); }
+  labs.forEach(function (l) { ext(l.left - (o.numbers ? 20 : 4), l.y - 24, l.left + l.w + 6, l.y + 20); });
+  var slotVis = '', slotHit = '';
+  if (o.slots) {
+    for (var si = 0; si < n; si++) o.slots.split('').forEach(function (side) {
+      var key = si + side, x = si * DX, y = (side === 'u' ? -1 : 1) * DY;
+      var yTop = side === 'u' ? -2 * DY - 26 : DY - 30, hh = DY + 56;
+      ext(x - 26, y - 26, x + 26, y + 26);
+      if (!spec.s[key]) slotVis += '<circle cx="' + x + '" cy="' + y + '" r="21"/><text x="' + x + '" y="' + (y + 8) + '" text-anchor="middle">+</text>';
+      slotHit += '<rect class="hit" data-a="slot" data-slot="' + key + '" x="' + (x - 40) + '" y="' + yTop + '" width="80" height="' + hh + '"><title>Platz ' + (side === 'u' ? 'über' : 'unter') + ' dem ' + (si + 1) + '. C-Atom</title></rect>';
+    });
+  }
+  if (o.fixY) { y0 = Math.min(y0, -2 * DY - 26); y1 = Math.max(y1, 2 * DY + 26); }
+  if (o.fixW) {
+    var want = (o.fixW - 1) * DX + 110, have = x1 - x0;
+    if (have < want) { x0 -= (want - have) / 2; x1 += (want - have) / 2; }
+  }
+  var vb = [f(x0 - 6), f(y0 - 6), f(x1 - x0 + 12), f(y1 - y0 + 12)], sc = o.scale || SC;
+  var s = '<svg class="formel' + (o.cls ? ' ' + o.cls : '') + '" viewBox="' + vb.join(' ') + '" width="' + f(vb[2] * sc) + '" height="' + f(vb[3] * sc) + '"' + (o.b ? ' data-b="' + o.b + '"' : '') +
+    ' role="img" aria-label="' + esc(o.label || ('Halbstrukturformel' + (r && o.sayName ? ' von ' + r.name : ''))) + '">';
+  (o.hl || []).forEach(function (a) { var l = L[a]; if (l) s += '<rect class="glow" x="' + f(l.left - 7) + '" y="' + f(l.y - 18) + '" width="' + f(l.w + 14) + '" height="36" rx="12"/>'; });
+  if (o.ring != null && L[o.ring]) { var rl = L[o.ring]; s += '<rect class="ring" x="' + f(rl.left - 8) + '" y="' + f(rl.y - 19) + '" width="' + f(rl.w + 16) + '" height="38" rx="13"/>'; }
+  if (slotVis) s += '<g class="slot" aria-hidden="true">' + slotVis + '</g>';
+  bonds.forEach(function (b) { var p = bondLine(b[0], b[1]); s += '<line x1="' + f(p[0]) + '" y1="' + f(p[1]) + '" x2="' + f(p[2]) + '" y2="' + f(p[3]) + '"/>'; });
+  labs.forEach(function (l) { s += txt(l); });
+  if (o.numbers && r) r.chain.forEach(function (a) {
+    var l = L[a]; s += '<text class="loc" x="' + f(l.left - 2) + '" y="' + f(l.y - CAP / 2 - 3) + '" text-anchor="end">' + r.loc[a] + '</text>';
+  });
+  return s + slotHit + '</svg>';
+}
+/* Allgemeine Formeln R-C-OH für B3 */
+function rFormel(top, bottom) {
+  var s = '<svg class="formel" viewBox="-70 -78 190 156" width="152" height="125" style="margin:0 auto" role="img" aria-label="allgemeine Formel">';
+  var c = cLab(0, 0, '', 0), oh = oLab(c.left + c.w + 44 + M.O / 2, 0);
+  s += '<line x1="' + f(-58 + 22) + '" y1="0" x2="' + f(c.left - GAP) + '" y2="0"/>';
+  s += '<line x1="' + f(c.left + c.w + GAP) + '" y1="0" x2="' + f(oh.left - GAP) + '" y2="0"/>';
+  s += '<line x1="0" y1="' + f(-CAP / 2 - GAP - 3) + '" x2="0" y2="' + f(-DY + CAP / 2 + GAP) + '"/>';
+  s += '<line x1="0" y1="' + f(CAP / 2 + GAP + 3) + '" x2="0" y2="' + f(DY - CAP / 2 - GAP) + '"/>';
+  s += '<text class="rlab" x="-58" y="' + f(CAP / 2) + '">R</text>' + txt(c) + txt(oh);
+  s += '<text class="rlab" x="' + f(-M.C / 2) + '" y="' + f(-DY + CAP / 2) + '">' + top + '</text>';
+  s += '<text class="rlab" x="' + f(-M.C / 2) + '" y="' + f(DY + CAP / 2) + '">' + bottom + '</text>';
+  return s + '</svg>';
+}
+
+/* ---------- Bausteine für Namen ---------- */
+var TILES = [
+  { cap: 'Nummern und Zeichen', t: ['1', '2', '3', '4', '5', '6', '7', '8', ',', '-'] },
+  { cap: 'Seitenketten und Zahlwörter', t: ['methyl', 'ethyl', 'di', 'tri', 'tetra'] },
+  { cap: 'Hauptkette', t: ['methan', 'ethan', 'propan', 'butan', 'pentan', 'hexan', 'heptan', 'octan'] },
+  { cap: 'Endung', t: ['ol'] }
+];
+var TLAB = { ',': ',', '-': '-', methyl: 'Methyl', ethyl: 'Ethyl', di: 'di', tri: 'tri', tetra: 'tetra', ol: 'ol' };
+var TARIA = { ',': 'Komma', '-': 'Bindestrich', ol: 'Endung ol' };
+function tileLabel(t) { return TLAB[t] || (t.length > 2 ? CHEM.cap(t) : t); }
+function tileClass(t) {
+  if (t === ',' || t === '-') return ' sym';
+  if (t === 'ol') return ' k-oh';
+  if (/an$/.test(t)) return ' k-chain';
+  return '';
+}
+function composer(cid, tk, lock) {
+  var show = tk.length ? '<span>' + esc(CHEM.cap(tk.join(''))) + '</span>' : 'Tippe die Bausteine in der richtigen Reihenfolge an.';
+  var h = '<div class="compose"><div class="display' + (tk.length ? '' : ' empty') + '" aria-live="polite">' + show + '</div>';
+  TILES.forEach(function (grp) {
+    h += '<div class="tilerow" role="group" aria-label="' + grp.cap + '">';
+    grp.t.forEach(function (t) {
+      h += '<button type="button" class="tile' + tileClass(t) + '" data-a="tile" data-c="' + cid + '" data-v="' + esc(t) + '"' +
+        (TARIA[t] ? ' aria-label="' + TARIA[t] + '"' : '') + (lock ? ' disabled' : '') + '>' + esc(tileLabel(t)) + '</button>';
+    });
+    if (grp.cap === 'Endung') {
+      h += '<button type="button" class="tile ctrl" data-a="del" data-c="' + cid + '"' + (lock || !tk.length ? ' disabled' : '') + '>Letzten löschen</button>' +
+        '<button type="button" class="tile ctrl" data-a="clear" data-c="' + cid + '"' + (lock || !tk.length ? ' disabled' : '') + '>Alles löschen</button>';
+    }
+    h += '</div>';
+  });
+  return h + '</div>';
+}
+
+/* ---------- Baukasten ---------- */
+var TOOLS = [['OH', 'OH'], ['CH3', 'CH<sub>3</sub>'], ['C2H5', 'C<sub>2</sub>H<sub>5</sub>'], ['X', 'Radierer']];
+function builder(b, spec, opts) {
+  opts = opts || {};
+  var h = '<div class="toolbar">';
+  if (!opts.onlyOH) {
+    h += '<div class="tools" role="group" aria-label="Werkzeuge">';
+    TOOLS.forEach(function (t) {
+      h += '<button type="button" class="tool' + (t[0] === 'OH' ? ' oh' : '') + '" data-a="tool" data-t="' + t[0] + '" aria-pressed="' + (S.tool === t[0]) + '">' + t[1] + '</button>';
+    });
+    h += '</div>';
+    h += '<div class="stepper"><button type="button" class="btn" data-a="len" data-b="' + b + '" data-d="-1" aria-label="Kette kürzer"' + (spec.n <= 1 ? ' disabled' : '') + '>&minus;</button>' +
+      '<span class="val">Kette: ' + spec.n + ' C</span><button type="button" class="btn" data-a="len" data-b="' + b + '" data-d="1" aria-label="Kette länger"' + (spec.n >= 8 ? ' disabled' : '') + '>+</button></div>';
+  }
+  h += '</div>';
+  h += '<div class="fbox">' + drawFormel(spec, { slots: opts.onlyOH ? 'u' : 'ud', b: b, cls: 'builder', fixW: 8, fixY: true, color: !!opts.color, numbers: !!opts.numbers, label: 'Baukasten' }) + '</div>';
+  return h;
+}
+function place(spec, key, tool, maxOH) {
+  var s = spec.s, cur = s[key], i = parseInt(key, 10), other = i + (key.slice(-1) === 'u' ? 'd' : 'u');
+  S.note = null;
+  if (tool === 'X') { delete s[key]; return; }
+  if (cur === tool) { delete s[key]; return; }
+  if (tool === 'OH') {
+    if (s[other] === 'OH') { S.note = 'Ein C-Atom trägt höchstens eine OH-Gruppe.'; return; }
+    var ohs = Object.keys(s).filter(function (k) { return s[k] === 'OH' && k !== key; });
+    if (ohs.length >= maxOH) {
+      if (maxOH === 1) { delete s[ohs[0]]; S.note = 'Die OH-Gruppe sitzt jetzt am neuen Platz. In dieser Aufgabe gibt es nur eine OH-Gruppe.'; }
+      else { S.note = 'Mehr als ' + maxOH + ' OH-Gruppen sind hier nicht vorgesehen.'; return; }
+    }
+  }
+  s[key] = tool;
+}
+
+/* ---------- Gemeinsame Teile ---------- */
+function head(eb, title, meta) {
+  return '<div class="stephead"><div class="eyebrow">' + eb + '</div><h2>' + title + '</h2>' + (meta ? '<div class="meta">' + meta + '</div>' : '') + '</div>';
+}
+function auftrag(items) { return '<ol class="auftrag">' + items.map(function (x) { return '<li><span>' + x + '</span></li>'; }).join('') + '</ol>'; }
+function feld(name) { return '<span class="feld">Feld ' + name + '</span>'; }
+function tips(key, t1, t2, onOpen2) {
+  var n = S.tips[key] || 0;
+  var h = '<div class="tips"><button type="button" class="btn small" data-a="tip" data-k="' + key + '" data-n="1" aria-expanded="' + (n >= 1) + '">Tipp 1</button>' +
+    '<button type="button" class="btn small" data-a="tip" data-k="' + key + '" data-n="2" aria-expanded="' + (n >= 2) + '"' + (n < 1 ? ' disabled' : '') + '>Tipp 2</button></div>';
+  if (n >= 1) h += '<div class="tipbox fade"><b>Tipp 1.</b> ' + t1 + '</div>';
+  if (n >= 2) h += '<div class="tipbox fade"><b>Tipp 2.</b> ' + t2 + '</div>';
+  return h;
+}
+function legend() {
+  return '<div class="legend"><span><i style="background:var(--chain)"></i>Hauptkette</span><span><i style="background:var(--oh)"></i>OH-Gruppe</span>' +
+    '<span><i style="background:var(--methyl)"></i>Methylgruppe</span><span><i style="background:var(--ethyl)"></i>Ethylgruppe</span></div>';
+}
+function fbBox(fb) { return fb ? '<div class="fb ' + fb.cls + ' fade" role="status">' + fb.msg + '</div>' : ''; }
+
+/* ---------- Schritte ---------- */
+var VIEW = {};
+
+VIEW.start = function () {
+  var weiter = S.max > 1;
+  return '<div class="hero">' +
+    '<div class="startcol"><div class="eyebrow">Chemie EF, organische Stoffklassen</div>' +
+    '<h1>Steht auf dem Desinfektionsmittel zweimal derselbe Alkohol?</h1><div class="subt">Benennung der Alkanole</div>' +
+    '<p>Auf dem Etikett stehen zwei Namen, die sich nur in einer Zahl unterscheiden. In dieser Lerneinheit entwickelst du die Regeln, nach denen Alkanole benannt werden. Am Ende kannst du die Titelfrage begründet beantworten.</p>' +
+    '<div class="info">Du arbeitest allein am iPad und trägst deine Ergebnisse in das Ergebnisblatt ein. Erst wenn ein Feld ausgefüllt ist, geht es weiter. An zwei Tandem-Halten vergleichst du deine Regeln mit deinem Tandem. Bei Schwierigkeiten helfen Tipp 1 und Tipp 2.</div>' +
+    '<div class="row"><button type="button" class="btn primary" data-a="start">' + (weiter ? 'Weiterarbeiten' : 'Lerneinheit starten') + '</button></div>' +
+    '<p class="small">Dein Fortschritt bleibt nur auf diesem iPad gespeichert. Die App verschickt keine Daten.</p></div>' +
+    '<div class="startcol"><div class="etikett" aria-label="Etikett eines Händedesinfektionsmittels"><div class="band">Händedesinfektion</div><div class="body">' +
+    '<div class="w">Wirkstoffe</div><div class="stoff">Propan-2-ol</div><div class="stoff">Propan-1-ol</div>' +
+    '<div class="klein">Zur hygienischen Händedesinfektion. Nur äußerlich anwenden.</div></div></div>' +
+    '<div class="ablauf"><div><div class="hd">Teil A, Regeln entdecken</div><table><tbody>' +
+    '<tr><td>A1 Die Endung -ol</td><td>4 min</td></tr><tr><td>A2 Die Stellung der OH-Gruppe</td><td>6 min</td></tr>' +
+    '<tr><td>A3 Verzweigte Alkanole</td><td>7 min</td></tr><tr><td>Tandem-Halt 1</td><td>3 min</td></tr></tbody></table></div>' +
+    '<div><div class="hd">Teil B, Regeln anwenden</div><table><tbody>' +
+    '<tr><td>B1 Namen angeben</td><td>6 min</td></tr><tr><td>B2 Moleküle darstellen</td><td>5 min</td></tr>' +
+    '<tr><td>B3 Primär, sekundär, tertiär</td><td>4 min</td></tr><tr><td>Tandem-Halt 2</td><td>2 min</td></tr></tbody></table></div></div>' +
+    '<p class="small">Wer früher fertig ist, bearbeitet eine Profi-Karte.</p></div></div>';
+};
+
+VIEW.A1 = function () {
+  var n = S.a1n, ra = CHEM.analyse({ n: n, s: {} });
+  var stem = CHEM.cap(CHEM.STAMM[n] + 'an');
+  var olSpec = { n: n, s: {} }; olSpec.s[(n - 1) + 'e'] = 'OH';
+  var rol = CHEM.analyse(olSpec);
+  var panel = head('Teil A, Regeln entdecken', 'A1 Die Endung -ol', 'ca. 4 min') +
+    '<p>Alkohole lassen sich von den Alkanen ableiten. Dabei ist ein H-Atom durch eine OH-Gruppe ersetzt. Solche Alkohole heißen Alkanole (Buch S. 47).</p>' +
+    '<div class="info">Die OH-Gruppe heißt <b>Hydroxygruppe</b>. Sie ist die funktionelle Gruppe der Alkohole. Das O-Atom ist über eine Elektronenpaarbindung an ein C-Atom gebunden. Die Hydroxygruppe ist deshalb kein Hydroxid-Ion und trägt keine Ladung (Buch S. 46).</div>' +
+    auftrag([
+      'Verändere in der Werkbank mit &minus; und + die Anzahl der C-Atome. Vergleiche jeweils den Namen des Alkans mit dem Namen des Alkanols.',
+      'Stelle in ' + feld('A1') + ' eine Regel auf, nach der aus dem Namen eines Alkans der Name des Alkanols entsteht.',
+      'Gib in ' + feld('A1') + ' die funktionelle Gruppe der Alkanole an.'
+    ]) +
+    tips('A1', 'Vergleiche Ethan und Ethanol. Achte darauf, welcher Teil des Namens gleich bleibt.',
+      'Beim Alkanol kommt am Ende des Namens etwas hinzu. Dieser Teil steht für die OH-Gruppe.');
+  var bench = '<div class="toolbar"><div class="hd">Werkbank</div><div class="stepper"><button type="button" class="btn" data-a="a1n" data-d="-1" aria-label="ein C-Atom weniger"' + (n <= 1 ? ' disabled' : '') + '>&minus;</button>' +
+    '<span class="val">' + n + ' C-Atom' + (n > 1 ? 'e' : '') + '</span><button type="button" class="btn" data-a="a1n" data-d="1" aria-label="ein C-Atom mehr"' + (n >= 8 ? ' disabled' : '') + '>+</button></div></div>' +
+    '<div class="pair"><div class="lab">Alkan</div><div><div class="fbox">' + drawFormel({ n: n, s: {} }, { color: true, label: 'Halbstrukturformel von ' + stem }) + '</div>' +
+    '<div class="row"><span class="name"><span class="n-chain">' + stem + '</span></span><span class="mf">' + CHEM.formel(ra) + '</span></div></div>' +
+    '<div class="lab">Alkanol</div><div><div class="fbox">' + drawFormel(olSpec, { color: true, label: 'Halbstrukturformel von ' + stem + 'ol' }) + '</div>' +
+    '<div class="row"><span class="name"><span class="n-chain">' + stem + '</span><span class="n-oh">ol</span></span><span class="mf">' + CHEM.formel(rol) + '</span></div></div></div>' +
+    '<p class="small">Bei diesen Alkanolen sitzt die OH-Gruppe am Ende der Kette. Die Namen stehen hier wie in der Tabelle im Buch (S. 47) ohne Zahl.</p>';
+  return { panel: panel, bench: bench };
+};
+
+VIEW.A2 = function () {
+  var c = S.a2c, key = S.a2[c], spec = { n: c, s: {} };
+  if (key) spec.s[key] = 'OH';
+  var r = CHEM.analyse(spec);
+  var panel = head('Teil A, Regeln entdecken', 'A2 Die Stellung der OH-Gruppe', 'ca. 6 min') +
+    '<p>Auf dem Etikett stehen Propan-1-ol und Propan-2-ol. Mit dem Baukasten untersuchst du, was die Zahl im Namen angibt.</p>' +
+    auftrag([
+      'Untersuche Propan. Tippe nacheinander auf die Plätze über den C-Atomen und setze so die OH-Gruppe an jedes C-Atom. Beobachte den Namen und die blauen Nummern.',
+      'Wechsle zu Pentan. Setze die OH-Gruppe nacheinander an das 1. bis 5. C-Atom von links. Trage die Namen in die Tabelle in ' + feld('A2') + ' ein.',
+      'Stelle in ' + feld('A2') + ' eine Regel auf, nach der die Zahl im Namen bestimmt wird.',
+      'Prüfe deine Regel mit den beiden Prüffragen unter dem Baukasten.'
+    ]) +
+    tips('A2', 'Vergleiche die Namen, wenn die OH-Gruppe am 2. und am 4. C-Atom von links sitzt.',
+      'Achte darauf, von welcher Seite die blauen Nummern zählen, wenn die OH-Gruppe rechts von der Mitte sitzt.');
+  var tried = '';
+  if (c === 5) {
+    tried = '<div class="tried"><span>Ausprobiert, C-Atom von links:</span>';
+    for (var i = 0; i < 5; i++) tried += '<b class="' + (S.a2tried[i] ? 'on' : '') + '">' + (i + 1) + '.</b>';
+    tried += '</div>';
+  }
+  var nm = key ? '<span class="name">' + nameHTML(r.parts, true) + '</span>' : '<span class="name"><span class="n-chain">' + r.name + '</span></span><span class="small">Tippe auf einen Platz über einem C-Atom.</span>';
+  var q1o = [['heptan-6-ol', 'Heptan-6-ol'], ['heptan-2-ol', 'Heptan-2-ol'], ['hexan-2-ol', 'Hexan-2-ol']];
+  var q1fb = S.q1 == null ? '' : S.q1 === 'heptan-2-ol'
+    ? '<div class="fb ok fade">Richtig. Die Nummerierung beginnt an dem Ende, das näher an der OH-Gruppe liegt.</div>'
+    : S.q1 === 'heptan-6-ol' ? '<div class="fb bad fade">Prüfe die Zählrichtung. Vergleiche mit deiner Regel aus A2.</div>'
+      : '<div class="fb bad fade">Zähle die C-Atome der Kette noch einmal.</div>';
+  var q2fb = S.q2 == null ? '' : S.q2 === 'ja'
+    ? '<div class="fb ok fade">Richtig. Beide Moleküle bestehen aus 3 C-Atomen, 8 H-Atomen und 1 O-Atom. Sie unterscheiden sich nur in der Stellung der OH-Gruppe. Solche Moleküle heißen <b>Stellungsisomere</b> (Buch S. 47).</div>'
+    : '<div class="fb bad fade">Zähle in beiden Molekülen die C-, H- und O-Atome.</div>';
+  var bench = '<div class="toolbar"><div class="seg" role="group" aria-label="Kette wählen"><button type="button" data-a="a2c" data-n="3" aria-pressed="' + (c === 3) + '">Propan</button><button type="button" data-a="a2c" data-n="5" aria-pressed="' + (c === 5) + '">Pentan</button></div>' + legend() + '</div>' +
+    '<div class="fbox">' + drawFormel(spec, { slots: 'u', b: 'a2', cls: 'builder', fixW: 6, fixY: false, color: true, numbers: !!key, label: 'Baukasten' }) + '</div>' +
+    '<div class="row" style="justify-content:space-between">' + nm + '</div>' + tried +
+    '<div class="sep"></div><div class="hd">Prüfe dich</div>' +
+    '<div class="quiz"><p>1. Wähle den passenden Namen für dieses Molekül.</p><div class="fbox">' + drawFormel(SP.Q1, { label: 'Halbstrukturformel' }) + '</div>' +
+    '<div class="opts">' + q1o.map(function (o) {
+      var cl = S.q1 === o[0] ? (o[0] === 'heptan-2-ol' ? ' right' : ' wrong') : '';
+      return '<button type="button" class="opt' + cl + '" data-a="q1" data-v="' + o[0] + '">' + o[1] + '</button>';
+    }).join('') + '</div>' + q1fb + '</div>' +
+    '<div class="quiz"><p>2. Prüfe die Aussage: Propan-1-ol und Propan-2-ol haben dieselbe Molekülformel C<sub>3</sub>H<sub>7</sub>OH.</p>' +
+    '<div class="opts"><button type="button" class="opt' + (S.q2 === 'ja' ? ' right' : '') + '" data-a="q2" data-v="ja">stimmt</button>' +
+    '<button type="button" class="opt' + (S.q2 === 'nein' ? ' wrong' : '') + '" data-a="q2" data-v="nein">stimmt nicht</button></div>' + q2fb + '</div>';
+  return { panel: panel, bench: bench };
+};
+
+VIEW.A3 = function () {
+  var num = (S.tips.A3 || 0) >= 2;
+  var panel = head('Teil A, Regeln entdecken', 'A3 Verzweigte Alkanole', 'ca. 7 min') +
+    '<p>Viele Alkanole haben Seitenketten. Die vier Beispiele zeigen Halbstrukturformel und Namen. Gleiche Farben gehören zusammen.</p>' +
+    auftrag([
+      'Vergleiche in jedem Beispiel die Formel mit dem Namen.',
+      'Stelle in ' + feld('A3') + ' Regeln auf für<br>a) die Wahl der Hauptkette,<br>b) die Nummerierung,<br>c) die Angabe der Seitenketten im Namen.'
+    ]) +
+    tips('A3', 'Die Seitenketten kennst du von den Alkanen. Vergleiche in Beispiel 2, welche Nummern die OH-Gruppe und die Methylgruppe bekämen, wenn du von links und wenn du von rechts zählst.',
+      'Die Nummern der Hauptkette sind jetzt eingeblendet. Achte in Beispiel 2 darauf, welche Gruppe die kleinere Nummer bekommt, und in Beispiel 4 auf die Reihenfolge der Seitenketten im Namen.');
+  var bench = '<div class="toolbar"><div class="hd">Vier Beispiele</div>' + legend() + '</div><div class="grid2">' +
+    ['P1', 'P2', 'P3', 'P4'].map(function (k, i) {
+      var r = CHEM.analyse(SP[k]);
+      return '<div class="ex"><div class="nr">Beispiel ' + (i + 1) + '</div><div class="fbox">' + drawFormel(SP[k], { color: true, numbers: num, scale: 0.7, label: 'Halbstrukturformel von ' + r.name }) + '</div>' +
+        '<div class="name sm">' + nameHTML(r.parts, true) + '</div></div>';
+    }).join('') + '</div>';
+  return { panel: panel, bench: bench };
+};
+
+VIEW.H1 = function () {
+  var panel = head('Tandem-Halt 1', 'Regeln vergleichen', 'ca. 3 min') +
+    '<p>Wartet, bis ihr beide hier angekommen seid.</p>' +
+    auftrag([
+      'Vergleicht eure Regeln in den Feldern A1 bis A3.',
+      'Einigt euch auf eine Formulierung und ergänzt, was fehlt.',
+      'Markiert Stellen, bei denen ihr unsicher seid, mit einem Fragezeichen. Sie klären sich in Teil B oder in der Sicherung.'
+    ]);
+  var bench = '<div class="hd">Prüft, ob ihr zu jedem Punkt eine Regel habt</div>' +
+    '<ul class="plain"><li>Endung des Namens</li><li>Zahl für die Stellung der OH-Gruppe</li><li>Wahl der Hauptkette</li><li>Nummerierung, wenn Seitenketten vorhanden sind</li><li>Seitenketten im Namen: Nummer, Zahlwort, Reihenfolge</li></ul>' +
+    '<div class="info">Die Regeln vergleicht ihr in der Sicherung mit dem Kasten „Benennung von Alkanolen“ im Buch (S. 47).</div>';
+  return { panel: panel, bench: bench };
+};
+
+function taskTabs(group, list, i) {
+  return '<div class="tabs" role="tablist">' + list.map(function (x, j) {
+    var tt = task(group, x.id);
+    return '<button type="button" class="tab" role="tab" data-a="tab" data-g="' + group + '" data-i="' + j + '" aria-selected="' + (j === i) + '"><span class="st' + (tt.ok ? ' ok' : tt.sol ? ' sol' : '') + '"></span>' + x.id + (x.niv ? ' ' + x.niv : '') + '</button>';
+  }).join('') + '</div>';
+}
+function nameTask(group, list) {
+  var G = S[group], i = Math.min(G.i, list.length - 1), d = list[i], t = task(group, d.id);
+  var spec = SP[d.sp], r = CHEM.analyse(spec), solved = t.ok || t.sol;
+  var h = taskTabs(group, list, i);
+  h += '<div class="hd">' + d.id + ' Gib den Namen dieses Moleküls an.</div>';
+  h += '<div class="fbox">' + drawFormel(spec, { color: solved, numbers: solved, label: 'Halbstrukturformel' }) + '</div>';
+  if (solved) h += '<div class="name">' + nameHTML(r.parts, true) + '</div>';
+  h += composer(group + ':' + d.id, t.tk, solved);
+  h += '<div class="row"><button type="button" class="btn primary" data-a="check" data-c="' + group + ':' + d.id + '"' + (solved ? ' disabled' : '') + '>Prüfen</button>' +
+    '<button type="button" class="btn" data-a="sol" data-c="' + group + ':' + d.id + '"' + (solved || t.tries < 2 ? ' disabled' : '') + '>Lösung zeigen</button>' +
+    (i < list.length - 1 ? '<button type="button" class="btn" data-a="tab" data-g="' + group + '" data-i="' + (i + 1) + '">Nächste Aufgabe</button>' : '') + '</div>';
+  if (t.tries < 2 && !solved) h += '<p class="small">Die Lösung kannst du nach zwei Prüfversuchen ansehen.</p>';
+  h += fbBox(t.fb);
+  return { html: h, d: d, t: t };
+}
+function taskTips(group, d, t) {
+  var n = t.tips || 0, c = group + ':' + d.id;
+  var h = '<div class="hd">Hilfen zu ' + d.id + '</div><div class="tips"><button type="button" class="btn small" data-a="ttip" data-c="' + c + '" data-n="1" aria-expanded="' + (n >= 1) + '">Tipp 1</button>' +
+    '<button type="button" class="btn small" data-a="ttip" data-c="' + c + '" data-n="2" aria-expanded="' + (n >= 2) + '"' + (n < 1 ? ' disabled' : '') + '>Tipp 2</button></div>';
+  if (n >= 1) h += '<div class="tipbox fade"><b>Tipp 1.</b> ' + d.t1 + '</div>';
+  if (n >= 2) h += '<div class="tipbox fade"><b>Tipp 2.</b> ' + d.t2 + '</div>';
+  return h;
+}
+
+VIEW.B1 = function () {
+  var nt = nameTask('b1', B1);
+  var panel = head('Teil B, Regeln anwenden', 'B1 Namen angeben', 'ca. 6 min') +
+    '<p>Jetzt wendest du deine Regeln an. Setze den Namen aus den Bausteinen zusammen und prüfe ihn.</p>' +
+    auftrag([
+      'Gib die Namen der vier Moleküle an. Beginne mit B1.1.',
+      'Trage jeden richtigen Namen in ' + feld('B1') + ' ein.'
+    ]) + '<div class="sep"></div>' + taskTips('b1', nt.d, nt.t);
+  return { panel: panel, bench: nt.html };
+};
+
+function buildTask(group, list) {
+  var G = S[group], i = Math.min(G.i, list.length - 1), d = list[i], t = task(group, d.id);
+  if (!t.spec) t.spec = { n: 5, s: {} };
+  var rt = CHEM.analyse(SP[d.sp]), solved = t.ok || t.sol;
+  var h = taskTabs(group, list, i) + '<div class="target"><div class="hd">' + d.id + ' Stelle dieses Molekül im Baukasten dar.</div><div class="name">' + esc(rt.name) + '</div></div>';
+  if (t.sol && !t.ok) {
+    h += '<div class="fb note fade">So sieht eine richtige Lösung aus. Stelle sie im Baukasten nach.</div><div class="fbox">' + drawFormel(SP[d.sp], { color: true, numbers: true, label: 'Lösung' }) + '</div>';
+  }
+  h += builder(group, t.spec, { color: t.ok, numbers: t.ok });
+  if (S.note && S.noteB === group) h += '<div class="fb note fade">' + esc(S.note) + '</div>';
+  h += '<div class="row"><button type="button" class="btn primary" data-a="bcheck" data-c="' + group + ':' + d.id + '"' + (t.ok ? ' disabled' : '') + '>Prüfen</button>' +
+    '<button type="button" class="btn" data-a="sol" data-c="' + group + ':' + d.id + '"' + (solved || t.tries < 2 ? ' disabled' : '') + '>Lösung zeigen</button>' +
+    (i < list.length - 1 ? '<button type="button" class="btn" data-a="tab" data-g="' + group + '" data-i="' + (i + 1) + '">Nächste Aufgabe</button>' : '') + '</div>';
+  if (t.tries < 2 && !solved) h += '<p class="small">Die Lösung kannst du nach zwei Prüfversuchen ansehen.</p>';
+  h += fbBox(t.fb);
+  return { html: h, d: d, t: t };
+}
+
+VIEW.B2 = function () {
+  var bt = buildTask('b2', B2);
+  var panel = head('Teil B, Regeln anwenden', 'B2 Moleküle darstellen', 'ca. 5 min') +
+    '<p>Jetzt gehst du den umgekehrten Weg. Zu jedem Namen gehört genau ein Molekül.</p>' +
+    '<div class="info">Wähle ein Werkzeug und tippe auf einen freien Platz über oder unter einem C-Atom. Mit &minus; und + änderst du die Länge der Kette. Der Radierer entfernt eine Gruppe.</div>' +
+    auftrag([
+      'Stelle die drei Moleküle im Baukasten dar und prüfe sie.',
+      'Zeichne die Halbstrukturformel von 4,4-Dimethylpentan-2-ol (B2.2) in ' + feld('B2') + '.'
+    ]) + '<div class="sep"></div>' + taskTips('b2', bt.d, bt.t);
+  return { panel: panel, bench: bt.html };
+};
+
+VIEW.B3 = function () {
+  var hl = (S.b3tips || 0) >= 2;
+  var panel = head('Teil B, Regeln anwenden', 'B3 Primär, sekundär, tertiär', 'ca. 4 min') +
+    '<p>Alkanole werden nach der Stellung der OH-Gruppe eingeteilt (Buch S. 47). R steht in den allgemeinen Formeln für eine Alkylgruppe.</p>' +
+    auftrag([
+      'Vergleiche die drei allgemeinen Formeln. Stelle in ' + feld('B3') + ' eine Regel auf, nach der Alkanole in primär, sekundär und tertiär eingeteilt werden.',
+      'Ordne die vier Alkanole zu und trage die Zuordnung in ' + feld('B3') + ' ein.'
+    ]) + '<div class="sep"></div>' +
+    '<div class="tips"><button type="button" class="btn small" data-a="b3tip" data-n="1" aria-expanded="' + ((S.b3tips || 0) >= 1) + '">Tipp 1</button>' +
+    '<button type="button" class="btn small" data-a="b3tip" data-n="2" aria-expanded="' + hl + '"' + ((S.b3tips || 0) < 1 ? ' disabled' : '') + '>Tipp 2</button></div>' +
+    ((S.b3tips || 0) >= 1 ? '<div class="tipbox fade"><b>Tipp 1.</b> Achte auf das C-Atom, das die OH-Gruppe trägt.</div>' : '') +
+    (hl ? '<div class="tipbox fade"><b>Tipp 2.</b> Zähle die C-Atome, die direkt mit diesem C-Atom verbunden sind. In den Formeln sind sie jetzt gelb markiert.</div>' : '');
+  var bench = '<div class="rform">' +
+    '<div><div class="hd">primär</div>' + rFormel('H', 'H') + '</div>' +
+    '<div><div class="hd">sekundär</div>' + rFormel('R', 'H') + '</div>' +
+    '<div><div class="hd">tertiär</div>' + rFormel('R', 'R') + '</div></div>' +
+    '<div class="grid2">' + B3.map(function (x, i) {
+      var r = CHEM.analyse(SP[x.sp]), v = S.b3[i];
+      var fb = v == null ? '' : v === r.cls ? '<div class="fb ok fade">Richtig. Das C-Atom der OH-Gruppe ist mit ' + r.ohNb.length + ' C-Atom' + (r.ohNb.length > 1 ? 'en' : '') + ' verbunden.</div>'
+        : '<div class="fb bad fade">Zähle die C-Atome, die direkt mit dem C-Atom der OH-Gruppe verbunden sind.</div>';
+      return '<div class="ex"><div class="nr">' + (i + 1) + '. ' + esc(r.name) + '</div><div class="fbox">' + drawFormel(SP[x.sp], { scale: 0.66, hl: hl ? r.ohNb : null, ring: hl ? r.ohAtom : null, label: 'Halbstrukturformel von ' + r.name }) + '</div>' +
+        '<div class="cls">' + ['primär', 'sekundär', 'tertiär'].map(function (c) {
+          var cl = v === c ? (c === r.cls ? ' right' : ' wrong') : '';
+          return '<button type="button" class="opt' + cl + '" data-a="b3" data-i="' + i + '" data-v="' + c + '">' + c + '</button>';
+        }).join('') + '</div>' + fb + '</div>';
+    }).join('') + '</div>';
+  return { panel: panel, bench: bench };
+};
+
+VIEW.H2 = function () {
+  var t = task('b1', 'B1.4'), solved = t.ok || t.sol;
+  var panel = head('Tandem-Halt 2', 'Regeln prüfen', 'ca. 2 min') +
+    auftrag([
+      'Erklärt euch gegenseitig an Aufgabe B1.4, wie ihr die Hauptkette gefunden habt.',
+      'Prüft, ob eure Regeln aus Teil A für alle Aufgaben gereicht haben. Ergänzt sie, falls nötig.'
+    ]) + '<p>Danach bearbeitet ihr eine Profi-Karte, bis die Sicherung beginnt.</p>';
+  var bench = '<div class="hd">Aufgabe B1.4</div><div class="fbox">' + drawFormel(SP.B14, { color: solved, numbers: solved, label: 'Halbstrukturformel aus B1.4' }) + '</div>' +
+    (solved ? '<div class="name">' + nameHTML(CHEM.analyse(SP.B14).parts, true) + '</div>' : '<p class="small">Die Farben erscheinen, sobald du B1.4 gelöst hast.</p>');
+  return { panel: panel, bench: bench };
+};
+
+VIEW.P = function () {
+  var p = S.profi;
+  var panel = head('Für Schnelle', 'Profi-Karten', 'bis zur Sicherung') +
+    '<p>Wähle eine Karte. Wenn die Sicherung beginnt, hörst du auf.</p>' +
+    '<div class="profi-pick"><button type="button" class="pcard" data-a="profi" data-v="A" aria-pressed="' + (p === 'A') + '"><span class="hd">Profi A</span><span>Isomere des Hexanols (Buch S. 47, Aufgabe 1)</span></button>' +
+    '<button type="button" class="pcard" data-a="profi" data-v="B" aria-pressed="' + (p === 'B') + '"><span class="hd">Profi B</span><span>Mehrwertige Alkohole (Buch S. 47 und 52)</span></button></div>';
+  var bench;
+  if (p === 'A') {
+    var a = S.pa;
+    panel += '<div class="sep"></div>' + auftrag([
+      'Stelle vier verschiedene Isomere des Hexanols (C<sub>6</sub>H<sub>13</sub>OH) im Baukasten dar und gib jeweils den Namen an. Die App prüft Molekülformel und Namen.',
+      'Notiere die Namen im ' + feld('Profi') + ' auf dem Ergebnisblatt.'
+    ]) + '<div class="tips"><button type="button" class="btn small" data-a="patip" data-n="1" aria-expanded="' + (a.tips >= 1) + '">Tipp 1</button><button type="button" class="btn small" data-a="patip" data-n="2" aria-expanded="' + (a.tips >= 2) + '"' + (a.tips < 1 ? ' disabled' : '') + '>Tipp 2</button></div>' +
+      (a.tips >= 1 ? '<div class="tipbox fade"><b>Tipp 1.</b> Isomere haben dieselbe Molekülformel. Jedes Molekül braucht 6 C-Atome und eine OH-Gruppe.</div>' : '') +
+      (a.tips >= 2 ? '<div class="tipbox fade"><b>Tipp 2.</b> Verkürze die Kette auf 5 C-Atome und setze eine Methylgruppe an. Verschiebe dann die OH-Gruppe oder die Methylgruppe.</div>' : '');
+    var rb = CHEM.analyse(a.spec);
+    bench = '<div class="hd">Profi A Isomere des Hexanols</div>' + builder('pa', a.spec, {}) +
+      (S.note && S.noteB === 'pa' ? '<div class="fb note fade">' + esc(S.note) + '</div>' : '') +
+      '<p class="small">Dein Molekül: ' + (rb ? rb.nC + ' C-Atom' + (rb.nC > 1 ? 'e' : '') + ', ' + rb.ohCount + ' OH-Gruppe' + (rb.ohCount === 1 ? '' : 'n') : 'leer') + '</p>' +
+      composer('pa', a.tk, false) +
+      '<div class="row"><button type="button" class="btn primary" data-a="pacheck">Prüfen</button></div>' + fbBox(a.fb) +
+      '<div class="hd">Gefunden: ' + a.found.length + ' von 4</div>' +
+      (a.found.length ? '<ul class="found">' + a.found.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' : '');
+  } else if (p === 'B') {
+    var G = S.pb, i = Math.min(G.i, PB.length - 1), d = PB[i], t = task('pb', d.id);
+    panel += '<div class="sep"></div><div class="info">Alkohole mit mehreren OH-Gruppen heißen mehrwertige Alkohole. Jedes C-Atom trägt höchstens eine OH-Gruppe. Benannt werden sie wie die Alkanole. Vor der Endung -ol stehen alle Nummern der OH-Gruppen und ein Zahlwort für ihre Anzahl, zum Beispiel Propan-1,2,3-triol (Glycerin, Buch S. 47 und 52).</div>' +
+      auftrag(['Gib die Namen von PB1 und PB2 an.', 'Stelle PB3 im Baukasten dar.', 'Notiere deine Ergebnisse im ' + feld('Profi') + ' auf dem Ergebnisblatt.']) +
+      '<div class="sep"></div>' + taskTips('pb', d, t);
+    if (d.art === 'bau') bench = buildTask('pb', PB).html;
+    else bench = nameTask('pb', PB).html;
+  } else {
+    bench = '<div class="hd">Profi-Karte wählen</div><p>Wähle links eine Karte. Beide Karten nutzen den Baukasten und die Namensbausteine aus Teil B.</p>';
+  }
+  return { panel: panel, bench: bench };
+};
+
+VIEW.end = function () {
+  return '<div class="hero"><div class="startcol"><div class="eyebrow">Ende der Lerneinheit</div><h1>Zurück zum Etikett</h1>' +
+    '<p>Lege das iPad zur Seite. In der Sicherung vergleicht ihr eure Regeln mit dem Kasten im Buch (S. 47).</p>' +
+    '<div class="info">Danach beantwortest du im Exit auf dem Ergebnisblatt die Titelfrage „Steht auf dem Desinfektionsmittel zweimal derselbe Alkohol?“</div>' +
+    '<div class="row"><button type="button" class="btn" data-a="go" data-s="P">Zurück zu den Profi-Karten</button><button type="button" class="btn" data-a="end-ask">Sitzung beenden</button></div></div>' +
+    '<div class="startcol"><div class="etikett"><div class="band">Händedesinfektion</div><div class="body"><div class="w">Wirkstoffe</div><div class="stoff">Propan-2-ol</div><div class="stoff">Propan-1-ol</div></div></div></div></div>';
+};
+
+/* ---------- Seite aufbauen ---------- */
+function idx(s) { return STEPS.indexOf(s); }
+function renderTop() {
+  var h = '<div class="brand"><div class="eyebrow">Chemie EF</div><div class="t">Benennung der Alkanole</div></div>';
+  if (S.step !== 'start') {
+    h += '<nav class="chips" aria-label="Schritte">' + STEPS.filter(function (s) { return CHIP[s]; }).map(function (s) {
+      var i = idx(s), cur = S.step === s, done = i < S.max && !cur && (!FELD[s] || S.trans[s]);
+      return '<button type="button" class="chip' + (done ? ' done' : '') + '" data-a="go" data-s="' + s + '"' + (cur ? ' aria-current="step"' : '') + (i > S.max ? ' disabled' : '') + '>' + CHIP[s] + '</button>';
+    }).join('') + '</nav>';
+  }
+  document.getElementById('top').innerHTML = h;
+}
+function renderBottom() {
+  var bt = document.getElementById('bottom'), s = S.step;
+  if (s === 'start' || s === 'end') { bt.hidden = true; return; }
+  bt.hidden = false;
+  var h = '<button type="button" class="btn" data-a="prev">Zurück</button>';
+  if (FELD[s]) {
+    h += '<label class="trans"><input type="checkbox" id="trans-' + s + '" data-a="trans"' + (S.trans[s] ? ' checked' : '') + '><span>' + FELD[s] +
+      (S.trans[s] ? '' : '<span class="why">Erst dann geht es weiter.</span>') + '</span></label>';
+  } else h += '<span class="trans"></span>';
+  var ok = !FELD[s] || S.trans[s];
+  h += '<button type="button" class="btn primary" data-a="next"' + (ok ? '' : ' disabled') + '>' + (s === 'P' ? 'Zum Abschluss' : s === 'H2' ? 'Zu den Profi-Karten' : 'Weiter') + '</button>';
+  document.getElementById('bottomIn').innerHTML = h;
+}
+function render() {
+  renderTop();
+  var m = document.getElementById('main'), v = VIEW[S.step]();
+  if (typeof v === 'string') m.innerHTML = '<div class="fade">' + v + '</div>';
+  else m.innerHTML = '<div class="stage"><section class="panel" aria-label="Auftrag">' + v.panel + '</section><section class="bench" aria-label="Werkbank">' + v.bench + '</section></div>';
+  renderBottom();
+  save();
+}
+function go(s) {
+  if (idx(s) < 0) return;
+  S.step = s; S.max = Math.max(S.max, idx(s)); S.note = null;
+  render();
+  try { window.scrollTo(0, 0); } catch (e) {}
+}
+
+/* ---------- Dialog ---------- */
+function openModal(kind) {
+  var box = document.getElementById('modalBox'), h = '';
+  if (kind === 'sitzung') {
+    h = '<h3 id="modalT">Sitzung auf diesem iPad</h3><p>Auf diesem iPad ist schon eine Sitzung gespeichert.</p>' +
+      '<div class="row"><button type="button" class="btn primary" data-a="modal-close">Das ist meine Sitzung</button><button type="button" class="btn" data-a="reset">Neue Sitzung starten</button></div>';
+  } else if (kind === 'ende') {
+    h = '<h3 id="modalT">Sitzung beenden</h3><p>Dein Fortschritt auf diesem iPad wird gelöscht. Deine Ergebnisse stehen auf dem Ergebnisblatt.</p>' +
+      '<div class="row"><button type="button" class="btn primary" data-a="reset">Sitzung beenden</button><button type="button" class="btn" data-a="modal-close">Abbrechen</button></div>';
+  }
+  box.innerHTML = h;
+  document.getElementById('modal').hidden = false;
+  document.body.classList.add('noscroll');
+  var b = box.querySelector('button'); if (b) b.focus();
+}
+function closeModal() { document.getElementById('modal').hidden = true; document.body.classList.remove('noscroll'); }
+
+/* ---------- Bedienung ---------- */
+function findTask(c) {
+  var p = c.split(':'), group = p[0], id = p[1];
+  var list = group === 'b1' ? B1 : group === 'b2' ? B2 : PB;
+  var d = list.filter(function (x) { return x.id === id; })[0];
+  return { group: group, d: d, t: task(group, id) };
+}
+function tokensOf(c) { return c === 'pa' ? S.pa.tk : findTask(c).t.tk; }
+
+document.addEventListener('click', function (ev) {
+  var el = ev.target.closest('[data-a]');
+  if (!el || el.disabled) return;
+  var a = el.getAttribute('data-a'), D = function (k) { return el.getAttribute('data-' + k); };
+  if (a === 'trans') return;
+  switch (a) {
+    case 'start': S.started = true; go(S.max > 1 ? STEPS[S.max] : 'A1'); return;
+    case 'go': go(D('s')); return;
+    case 'next': if (FELD[S.step] && !S.trans[S.step]) return; go(STEPS[idx(S.step) + 1]); return;
+    case 'prev': go(STEPS[Math.max(0, idx(S.step) - 1)]); return;
+    case 'tip': var k = D('k'), n = +D('n'); S.tips[k] = Math.max(S.tips[k] || 0, n); break;
+    case 'ttip': var ft = findTask(D('c')); ft.t.tips = Math.max(ft.t.tips || 0, +D('n')); break;
+    case 'b3tip': S.b3tips = Math.max(S.b3tips || 0, +D('n')); break;
+    case 'patip': S.pa.tips = Math.max(S.pa.tips || 0, +D('n')); break;
+    case 'a1n': S.a1n = Math.max(1, Math.min(8, S.a1n + (+D('d')))); break;
+    case 'a2c': S.a2c = +D('n'); break;
+    case 'q1': S.q1 = D('v'); break;
+    case 'q2': S.q2 = D('v'); break;
+    case 'b3': S.b3[+D('i')] = D('v'); break;
+    case 'profi': S.profi = D('v'); S.note = null; break;
+    case 'tool': S.tool = D('t'); S.note = null; break;
+    case 'tab': S[D('g')].i = +D('i'); S.note = null; break;
+    case 'len': {
+      var b = D('b'), spec = b === 'pa' ? S.pa.spec : findTask(currentTaskKey(b)).t.spec;
+      spec.n = Math.max(1, Math.min(8, spec.n + (+D('d'))));
+      Object.keys(spec.s).forEach(function (kk) { if (parseInt(kk, 10) >= spec.n) delete spec.s[kk]; });
+      S.note = null; resetFb(b);
+      break;
+    }
+    case 'slot': {
+      var svg = el.closest('svg'), bb = svg && svg.getAttribute('data-b'), key = D('slot');
+      if (bb === 'a2') {
+        S.a2[S.a2c] = key;
+        if (S.a2c === 5) S.a2tried[parseInt(key, 10)] = true;
+      } else if (bb) {
+        var sp = bb === 'pa' ? S.pa.spec : findTask(currentTaskKey(bb)).t.spec;
+        if (bb !== 'pa' && findTask(currentTaskKey(bb)).t.ok) return;
+        place(sp, key, S.tool, bb === 'pb' ? 3 : 1);
+        S.noteB = bb; resetFb(bb);
+      }
+      break;
+    }
+    case 'tile': {
+      var tk = tokensOf(D('c')); if (tk.length < 30) tk.push(D('v'));
+      if (D('c') !== 'pa') { var x = findTask(D('c')); if (x.t.fb && x.t.fb.cls === 'bad') x.t.fb = null; }
+      else if (S.pa.fb && S.pa.fb.cls !== 'ok') S.pa.fb = null;
+      break;
+    }
+    case 'del': tokensOf(D('c')).pop(); break;
+    case 'clear': { var t2 = tokensOf(D('c')); t2.length = 0; break; }
+    case 'check': {
+      S.note = null;
+      var x1 = findTask(D('c')), r = CHEM.analyse(SP[x1.d.sp]), dg = CHEM.diagnose(x1.t.tk, r);
+      if (dg.ok) { x1.t.ok = true; x1.t.fb = { cls: 'ok', msg: 'Richtig. ' + (dg.note ? esc(dg.note) + ' ' : '') + 'Die Farben und Nummern zeigen Hauptkette und Nummerierung.' }; }
+      else { if (dg.code !== 'leer') x1.t.tries++; x1.t.fb = { cls: 'bad', msg: esc(dg.msg) }; }
+      break;
+    }
+    case 'bcheck': {
+      var x2 = findTask(D('c')), rb = CHEM.analyse(x2.t.spec), rt = CHEM.analyse(SP[x2.d.sp]), vg = CHEM.vergleiche(rb, rt);
+      if (vg.ok) { x2.t.ok = true; x2.t.fb = { cls: 'ok', msg: 'Richtig. Die Farben und Nummern zeigen Hauptkette und Nummerierung.' }; }
+      else { x2.t.tries++; x2.t.fb = { cls: 'bad', msg: esc(vg.msg) }; }
+      S.note = null;
+      break;
+    }
+    case 'sol': {
+      var x3 = findTask(D('c'));
+      x3.t.sol = true;
+      var rn = CHEM.analyse(SP[x3.d.sp]);
+      x3.t.fb = x3.d.art === 'bau' || x3.group === 'b2'
+        ? { cls: 'note', msg: 'Vergleiche die Lösung mit deinem Molekül.' }
+        : { cls: 'note', msg: 'Lösung: ' + esc(rn.name) + '. Vergleiche mit deinem Versuch und trage den Namen ein.' };
+      break;
+    }
+    case 'pacheck': {
+      S.note = null;
+      var A = S.pa, rr = CHEM.analyse(A.spec);
+      if (!rr) A.fb = { cls: 'bad', msg: 'Stelle zuerst ein Molekül dar.' };
+      else if (rr.nC !== 6 || rr.ohCount !== 1) A.fb = { cls: 'bad', msg: 'Ein Hexanol hat 6 C-Atome und eine OH-Gruppe. Dein Molekül hat ' + rr.nC + ' C-Atom' + (rr.nC > 1 ? 'e' : '') + ' und ' + rr.ohCount + ' OH-Gruppe' + (rr.ohCount === 1 ? '' : 'n') + '.' };
+      else {
+        var dd = CHEM.diagnose(A.tk, rr);
+        if (!dd.ok) A.fb = { cls: 'bad', msg: esc(dd.msg) };
+        else if (A.found.indexOf(rr.name) >= 0) A.fb = { cls: 'note', msg: esc(rr.name) + ' hast du schon gefunden. Verändere die Stellung der OH-Gruppe oder der Seitenketten.' };
+        else { A.found.push(rr.name); A.tk = []; A.fb = { cls: 'ok', msg: 'Richtig. ' + esc(rr.name) + ' ist ein Isomer des Hexanols.' + (A.found.length >= 4 ? ' Du hast vier Isomere gefunden. Es gibt noch mehr.' : '') }; }
+      }
+      break;
+    }
+    case 'end-ask': openModal('ende'); return;
+    case 'modal-close': closeModal(); return;
+    case 'reset':
+      S = fresh(); try { localStorage.removeItem(KEY); } catch (e) {}
+      closeModal(); render(); try { window.scrollTo(0, 0); } catch (e) {}
+      return;
+    default: return;
+  }
+  render();
+});
+document.addEventListener('change', function (ev) {
+  var el = ev.target;
+  if (el && el.getAttribute && el.getAttribute('data-a') === 'trans') { S.trans[S.step] = el.checked; render(); }
+});
+document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape' && !document.getElementById('modal').hidden) closeModal(); });
+function currentTaskKey(group) {
+  var list = group === 'b2' ? B2 : group === 'pb' ? PB : B1, i = Math.min(S[group].i, list.length - 1);
+  return group + ':' + list[i].id;
+}
+function resetFb(b) {
+  if (b === 'pa') { S.pa.fb = null; return; }
+  if (b === 'b2' || b === 'pb') { var x = findTask(currentTaskKey(b)); if (x.t.fb && x.t.fb.cls !== 'note') x.t.fb = null; }
+}
+
+/* ---------- Start ---------- */
+measure();
+render();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { measure(); render(); });
+if (S.started && !neu) openModal('sitzung');
+})();
+</script>
+</body>
+</html>
